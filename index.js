@@ -11,7 +11,7 @@ const authRouter = require('./routes/auth');
 const fastRouter = require('./routes/fast');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 // To support URL-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
