@@ -1,13 +1,13 @@
 {
   "name": "bolt-fasting-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "App for Fasting",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server"
   },
-  "author": "",
+  "author": "akshat aggarwal",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
