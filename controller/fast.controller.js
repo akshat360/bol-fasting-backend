@@ -2,6 +2,7 @@ const Fast = require('../models/fast.model');
 const Users = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const moment = require('moment');
 
 exports.createFast = (req, res) => {
   try {
@@ -15,7 +16,28 @@ exports.createFast = (req, res) => {
     fast.save((err, data) => {
       if (!err && data) {
         Users.findById(req.body.userId).exec((err, user) => {
+          if (user.fasts.length === 0) {
+            user.currentStreak = 1;
+            user.longestStreak = 1;
+          } else {
+            if (
+              moment(req.body.date)
+                .startOf('day')
+                .isSame(
+                  moment(user.fasts[0].date).startOf('day').subtract(1, 'day')
+                )
+            ) {
+              user.currentStreak + 1;
+            } else {
+              user.currentStreak = 1;
+            }
+          }
+          if (user.currentStreak > user.longestStreak) {
+            user.longestStreak = user.currentStreak;
+          }
+
           user.fasts.unshift(fast._id);
+
           user.save();
 
           if (!err && user) {
@@ -56,14 +78,36 @@ exports.endFast = (req, res) => {
       fast.fastState = 'ended';
       fast.endedAt = now;
       fast.fastingTime = fastingTime;
+
       fast.save();
 
       if (!err && fast) {
-        return res.status(200).json({
-          message: 'Fast Ended',
-          status: true,
-          data: fast,
-        });
+        Users.findById(req.body.userId)
+          .populate('fasts')
+          .exec((err, user) => {
+            if (parseFloat(fast.fastingTime) > parseFloat(user.longestFast)) {
+              user.longestFast = parseFloat(fast.fastingTime).toFixed(2);
+            }
+            let avg = 0;
+            user.fasts
+              .slice(0, 7)
+              .forEach((fast) => (avg = avg + parseFloat(fast.fastingTime)));
+            user.fastAvg7 = (avg / 7).toFixed(2);
+
+            user.save();
+
+            if (!err && user) {
+              return res.status(200).json({
+                message: 'Fast Ended',
+                status: true,
+                data: fast,
+              });
+            } else
+              return res.status(200).json({
+                message: 'User not found',
+                status: false,
+              });
+          });
       } else
         return res.status(200).json({
           message: 'Fast log not found',
@@ -85,7 +129,6 @@ exports.getUserAllFasts = (req, res) => {
   Users.findById(userId)
     .populate('fasts')
     .exec((err, user) => {
-      console.log('getUserAllFasts', err, user);
       if (!err && user) {
         return res.status(200).json({
           message: 'fasts fetched',

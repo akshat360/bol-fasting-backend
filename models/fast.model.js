@@ -9,10 +9,9 @@ let fastSchema = new Schema({
   endedAt: { type: Date, default: new Date() },
   fastingTime: { type: String },
   totalFastingTime: { type: String },
-  date: { type: Date, default: new Date() },
-  longestStreak: String,
-  currentStreak: String,
+  date: { type: String, default: new Date() },
+
   token: String,
 });
 
-module.exports = mongoose.model('fast', fastSchema);
+module.exports = mongoose.model('Fast', fastSchema);

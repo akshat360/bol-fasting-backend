@@ -21,7 +21,6 @@ exports.signup = (req, res) => {
       user.password = user.generateHash(password);
 
       user.save((err, user) => {
-        console.log('user', err);
         if (!err)
           return res.status(200).json({
             message: 'Registration Complete.',
@@ -52,30 +51,32 @@ exports.signup = (req, res) => {
 exports.signin = (req, res) => {
   try {
     const { email, password } = req.body;
-    Users.findOne({ email }).exec((err, user) => {
-      if (user && !err) {
-        let user1 = new Users(user);
-        if (user1) {
-          if (user1.validatePassword(password, user1.password))
-            return res.status(200).json({
-              message: 'Login Successfully.',
-              status: true,
-              data: user1,
-            });
-          else {
+    Users.findOne({ email })
+      .populate('Fast')
+      .exec((err, user) => {
+        if (user && !err) {
+          let user1 = new Users(user);
+          if (user1) {
+            if (user1.validatePassword(password, user1.password))
+              return res.status(200).json({
+                message: 'Login Successfully.',
+                status: true,
+                data: user1,
+              });
+            else {
+              return res.status(404).json({
+                message: "Password don't match.",
+                status: false,
+              });
+            }
+          } else {
             return res.status(404).json({
-              message: "Password don't match.",
+              message: 'Invalid email or password.',
               status: false,
             });
           }
-        } else {
-          return res.status(404).json({
-            message: 'Invalid email or password.',
-            status: false,
-          });
         }
-      }
-    });
+      });
   } catch (err) {
     console.log(err);
     return res.status(500).json({

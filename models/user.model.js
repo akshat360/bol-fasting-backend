@@ -15,6 +15,11 @@ let userSchema = new Schema({
   password: { type: String, required: true },
 
   fasts: [{ type: Schema.Types.ObjectId, ref: 'Fast' }],
+
+  fastAvg7: { type: String, default: '0' },
+  currentStreak: { type: String, default: '0' },
+  longestStreak: { type: String, default: '0' },
+  longestFast: { type: String, default: '0' },
 });
 
 // Methods
