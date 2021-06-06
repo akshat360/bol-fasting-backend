@@ -57,7 +57,7 @@ exports.signin = (req, res) => {
         let user1 = new Users(user);
         if (user1) {
           if (user1.validatePassword(password, user1.password))
-            return res.status(404).json({
+            return res.status(200).json({
               message: 'Login Successfully.',
               status: true,
               data: user1,

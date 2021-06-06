@@ -6,9 +6,12 @@ let fastSchema = new Schema({
   fastState: { type: String, default: 'initial' },
   startedAt: { type: Date, default: new Date() },
   endingAt: { type: Date, default: new Date() },
+  endedAt: { type: Date, default: new Date() },
   fastingTime: { type: String },
   totalFastingTime: { type: String },
   date: { type: Date, default: new Date() },
+  longestStreak: String,
+  currentStreak: String,
   token: String,
 });
 
